@@ -105,8 +105,8 @@ def med_luftmotstand():
     # Regner ut alle verdiene og legger dem til listene fram til bakken treffes
     while y >= 0:
 
-        t += 1 // PPS
-        time.append(t)
+        t += 1 / PPS
+        time.append(int(t))
 
         v += a(v) / PPS
 
@@ -229,10 +229,13 @@ plt.show()
 pygame.init()
 
 clock = pygame.time.Clock()
-width = 1800
-height = 900
 
 # Finner den laveste mulige meterlengden i pixler vertikalt og horisontalt, og bruker den laveste, slik simuleringen ikke forlater skjermen.
+screen = pygame.display.set_mode()
+
+width = screen.get_width()
+height = screen.get_height()
+
 min_meter_x = width / (xpos[-1] + SNOWBOARDER_W * 2)
 min_meter_y = height / (max_y + SNOWBOARDER_H * 2)
 if min_meter_x > min_meter_y:
@@ -242,51 +245,50 @@ else:
 
 
 font = pygame.font.Font("freesansbold.ttf", int(round(width / 50, 0)))
-screen = pygame.display.set_mode((width, height))
 running = True
 t = 0
+duration = len(xpos)
 
 
 while running:
 
     # Bruker try except, slik simuleringen automatisk stopper når t er out of range
-    try:
-        screen.fill((255, 255, 255))
+    screen.fill((255, 255, 255))
 
-        # Regner ut x og y posisjon på en måte slik snowboarderen ikke blir feilplassert i forhold til meterlengden og høyden sin.
-        x = xpos[t] * meter
-        y = height - (ypos[t] + SNOWBOARDER_H) * meter
+    # Regner ut x og y posisjon på en måte slik snowboarderen ikke blir feilplassert i forhold til meterlengden og høyden sin.
+    x = xpos[t] * meter
+    y = height - (ypos[t] + SNOWBOARDER_H) * meter
 
-        # Laster inn snowboarder bildet, skalerer det, roterer det og plasserer det på skjermen
-        # Dette må gjøres på nytt hver tick, fordi bildet endres/ødelegges litt hver gang det roterer.
-        snowboarder = pygame.image.load("ProgModX/snowboarder.png").convert()
-        snowboarder = pygame.transform.scale(
-            snowboarder, (SNOWBOARDER_W * meter, SNOWBOARDER_H * meter)
-        )
-        snowboarder = pygame.transform.rotate(snowboarder, θ[t])
-        screen.blit(snowboarder, (x, y))
+    # Laster inn snowboarder bildet, skalerer det, roterer det og plasserer det på skjermen
+    # Dette må gjøres på nytt hver tick, fordi bildet endres/ødelegges litt hver gang det roterer.
+    snowboarder = pygame.image.load("./snowboarder.png").convert()
+    snowboarder = pygame.transform.scale(
+        snowboarder, (SNOWBOARDER_W * meter, SNOWBOARDER_H * meter)
+    )
+    snowboarder = pygame.transform.rotate(snowboarder, θ[t])
+    screen.blit(snowboarder, (x, y))
 
-        # Skriver data fra hoppet til skjermen
-        skrift = font.render(
-            f"Time: {t/PPS:<.2f}s  Height: {ypos[t]:<.1f}m  Length: {xpos[t]:<.1f}m",
-            True,
-            (0, 0, 0),
-        )
-        screen.blit(skrift, (0, 0))
-
-    except:
-
-        # Skriver dataene fra hoppet til konsollen
-        print(
-            f"Time: {(t-1)/PPS:.2f}s  Max height: {max_y:.1f}m  Length: {xpos[t-1]:.1f}m  Landing angle: {θ_uglattet[t-1]:.0f}\u00b0"
-        )
-        pygame.time.wait(1000)
-        running = False
+    # Skriver data fra hoppet til skjermen
+    skrift = font.render(
+        f"Time: {t/PPS:<.2f}s  Height: {ypos[t]:<.1f}m  Length: {xpos[t]:<.1f}m",
+        True,
+        (0, 0, 0),
+    )
+    screen.blit(skrift, (0, 0))
 
     clock.tick(PPS)
     t += 1
     pygame.display.update()
+
+    if t >= duration:
+        running = False
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+
+# Skriver dataene fra hoppet til konsollen
+print(
+    f"Time: {(t-1)/PPS:.2f}s  Max height: {max_y:.1f}m  Length: {xpos[t-1]:.1f}m  Landing angle: {θ_uglattet[t-1]:.0f}\u00b0"
+)
 pygame.quit()
