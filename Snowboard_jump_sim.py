@@ -1,8 +1,11 @@
 import math
+from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pygame
+
+IMAGE_PATH = Path(__file__).resolve().parent / "snowboarder.png"
 
 # Brukerinput (Fart på hoppkanten, vikel på hoppkanten, og hvilke grafer som skal vises)
 v_0 = float(input("Speed (m/s): "))
@@ -261,7 +264,7 @@ while running:
 
     # Laster inn snowboarder bildet, skalerer det, roterer det og plasserer det på skjermen
     # Dette må gjøres på nytt hver tick, fordi bildet endres/ødelegges litt hver gang det roterer.
-    snowboarder = pygame.image.load("./snowboarder.png").convert()
+    snowboarder = pygame.image.load(IMAGE_PATH).convert()
     snowboarder = pygame.transform.scale(
         snowboarder, (SNOWBOARDER_W * meter, SNOWBOARDER_H * meter)
     )
