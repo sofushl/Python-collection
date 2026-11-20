@@ -1,0 +1,19 @@
+[project]
+name = "python-collection"
+version = "0"
+description = "Collection of old Python work"
+requires-python = ">=3.14"
+dependencies = [
+    "matplotlib",
+    "numpy",
+    "scipy",
+    "statsmodels",
+    "numba",
+    "pygame-ce",
+    "requests",
+    "beautifulsoup4",
+    "python-dotenv",
+    "openai",
+    "folium",
+    "osmnx",
+]
